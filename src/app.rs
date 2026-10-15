@@ -1,8 +1,10 @@
+use crate::core::session::PaneContent;
+use crate::renderer::theme::pane_style;
 use iced::widget::{button, column, container, pane_grid, row, text};
-use iced::{Element, Fill, Theme};
+use iced::{Element, Fill};
 
 #[derive(Debug, Clone)]
-enum Message {
+pub enum Message {
     Split,
     Activate(pane_grid::Pane),
     Resize(pane_grid::ResizeEvent),
@@ -11,12 +13,11 @@ enum Message {
     Terminal(iced_term::Event),
 }
 
-
-struct App {
-    panes: pane_grid::State<PaneContent>,
-    active: pane_grid::Pane,
-    next_id: usize,
-    split_axis: pane_grid::Axis,
+pub struct App {
+    pub panes: pane_grid::State<PaneContent>,
+    pub active: pane_grid::Pane,
+    pub next_id: usize,
+    pub split_axis: pane_grid::Axis,
 }
 
 impl Default for App {
@@ -34,7 +35,7 @@ impl Default for App {
 }
 
 impl App {
-    fn update(&mut self, message: Message) {
+    pub fn update(&mut self, message: Message) {
         match message {
             Message::Split => {
                 let id = self.next_id as u64;
@@ -99,37 +100,7 @@ impl App {
         }
     }
 
-    fn view(&self) -> Element<'_, Message> {
-        let active = self.active;
-        let grid = pane_grid::PaneGrid::new(&self.panes, |_pane, content, _maximized| {
-            pane_grid::Content::new(
-                container(iced_term::TerminalView::show(&content.terminal).map(Message::Terminal))
-                    .width(Fill)
-                    .height(Fill)
-                    .padding(6)
-                    .style(move |theme| pane_style(theme, _pane == active)),
-            )
-        })
-        .spacing(12)
-        .on_click(Message::Activate)
-        .on_resize(10, Message::Resize);
-
-        column![
-            row![
-                text("Terminux").size(24),
-                button("Toggle split").on_press(Message::Split),
-                button("Close").on_press(Message::CloseActive),
-                button("Toggle axis").on_press(Message::ToggleAxis),
-            ]
-            .spacing(16),
-            grid
-        ]
-        .padding(16)
-        .spacing(12)
-        .into()
-    }
-
-    fn subscription(&self) -> iced::Subscription<Message> {
+    pub fn subscription(&self) -> iced::Subscription<Message> {
         iced::Subscription::batch(
             self.panes
                 .iter()

@@ -1,10 +1,10 @@
 pub struct PaneContent {
-    title: String,
-    terminal: iced_term::Terminal,
+    pub title: String,
+    pub terminal: iced_term::Terminal,
 }
 
 impl PaneContent {
-    fn new(id: u64) -> std::io::Result<Self> {
+    pub fn new(id: u64) -> std::io::Result<Self> {
         let shell = std::env::var("SHELL").unwrap_or_else(|_| "/bin/bash".into());
 
         let settings = iced_term::settings::Settings {
